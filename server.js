@@ -4,8 +4,8 @@ import mongoose from "mongoose"
 import "dotenv/config"
 import listEndpoints from "express-list-endpoints"
 // import thoughtData from "./data.json" with { type: "json" }
-import thoughtRoutes from "./routes/thoughtRoutes"
-import userRoutes from "./routes/userRoutes"
+import thoughtRoutes from "./routes/thoughtRoutes.js"
+import userRoutes from "./routes/userRoutes.js"
 
 const mongoUrl = process.env.MONGO_URL
 mongoose.connect(mongoUrl)
