@@ -45,5 +45,3 @@ if (process.env.RESET_DB === "true") {
     console.log(`Server running on http://localhost:${port}`)
   })
 }
-
-export default app
