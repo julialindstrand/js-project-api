@@ -1,6 +1,6 @@
 import cors from "cors"
 import express from "express"
-import mongoose from "mongoose"
+import mongoose from 'mongoose'
 // import "dotenv/config"
 import listEndpoints from "express-list-endpoints"
 // import thoughtData from "./data.json" with { type: "json" }
