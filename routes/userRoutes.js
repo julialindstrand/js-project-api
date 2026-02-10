@@ -1,5 +1,6 @@
 import express from "express"
 import bcrypt from "bcrypt"
+import mongoose from "mongoose"
 
 const router = express.Router()
 
@@ -14,7 +15,7 @@ const User = mongoose.model('User', UserSchema)
 
 
 // New User
-app.post('/users/signup', async (req, res) => {
+router.post('/users/signup', async (req, res) => {
   try {
     const { email, password } = req.body
 
@@ -54,7 +55,7 @@ app.post('/users/signup', async (req, res) => {
 })
 
 // Log In
-app.post('/users/login', async (req, res) => {
+router.post('/users/login', async (req, res) => {
   try {
     const { email, password } = req.body
     const user = await User.findOne({ email: email.toLowerCase() })
