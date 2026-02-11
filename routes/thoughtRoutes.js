@@ -4,6 +4,24 @@ import { User } from "./userRoutes.js"
 
 const router = express.Router();
 
+const authenticateUser = async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      accessToken: req.header('Authorization').replace("Bearer ", ""),
+    })
+    if (user) {
+      req.user = user
+      next()
+    } else {
+      res.status(401).json({
+        message: "Authentication missing / invalid",
+        loggedOut: true
+      })
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message })
+  }
+}
 
 // Thought schema
 const thoughtSchema = new mongoose.Schema({
@@ -30,7 +48,7 @@ router.get("/thoughts", async (req, res) => {
 
 
 // Show thoughts with likes
-router.get("/thoughts/:id/like", async (req, res) => {
+router.get("/thoughts/like", async (req, res) => {
   const { hearts } = req.query
 
   const dbQuery = {}
@@ -119,11 +137,9 @@ router.post("/thoughts", async (req, res) => {
     }).save()
 
     if (!newThought) {
-      return res.status(400).json({
-        success: false,
-        data: null,
-        message: "Failed to post thought"
-      })
+      return res
+        .status(400)
+        .json({ success: false, data: null, message: "Failed to post thought" })
     }
 
     res.status(201).json({
@@ -144,23 +160,57 @@ router.post("/thoughts", async (req, res) => {
 // Edit
 router.patch('/thoughts/:id', async (req, res) => {
   await authenticateUser(req, res, next)
+  const { id } = req.params
+
   try {
-    const thought = await Thought.findById(req.params.id)
-
+    const thought = await Thought.findById(id);
     if (!thought) {
-      return res.status(404).json({ error: "Thought not found" })
+      return res.status(404).json({ error: "Thought not found" });
     }
-
     if (thought.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: "You can only edit your own thoughts" })
+      return res.status(403).json({ error: "You can only edit your own thoughts" });
     }
 
-    thought.thought = req.body.thought || thought.thought
+    thought.message = req.body.message ?? thought.message;
+    thought.hearts = req.body.hearts ?? thought.hearts;
+    await thought.save();
+
+    return res.json({ success: true, thought });
+  } catch (err) {
+    return res.status(400).json({ error: "Invalid request", details: err.message });
+  }
+})
+
+
+// Like
+router.post("/thoughts/:id/like", async (req, res, next) => {
+  const { id } = req.params
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid thought ID" })
+  }
+
+  try {
+    const thought = await Thought.findById(id)
+    if (!thought) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Thought not found" })
+    }
+
+    thought.hearts += 1
     await thought.save()
 
-    res.json(thought)
-  } catch (error) {
-    res.status(400).json({ error: "Invalid Id / request" })
+    return res
+      .status(200)
+      .json({ success: true, hearts: thought.hearts, message: "Liked!" })
+  } catch (err) {
+    console.error(err)
+    return res
+      .status(500)
+      .json({ success: false, message: err.message })
   }
 })
 
@@ -198,22 +248,3 @@ router.delete("/thoughts/:id", async (req, res, next) => {
 })
 
 export default router
-
-const authenticateUser = async (req, res, next) => {
-  try {
-    const user = await User.findOne({
-      accessToken: req.header('Authorization').replace("Bearer ", ""),
-    })
-    if (user) {
-      req.user = user
-      next()
-    } else {
-      res.status(401).json({
-        message: "Authentication missing / invalid",
-        loggedOut: true
-      })
-    }
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error.message })
-  }
-}
