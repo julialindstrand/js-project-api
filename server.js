@@ -1,4 +1,4 @@
-import cors from "cors"
+// import cors from "cors"
 import express from "express"
 import mongoose from "mongoose"
 import "dotenv/config"
@@ -25,22 +25,22 @@ if (process.env.RESET_DB === "true") {
 
 const app = express()
 
-const allowedOrigins = [
-  "http://localhost:5173",
-]
+// const allowedOrigins = [
+//   "http://localhost:5173",
+// ]
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true)
-      } else {
-        callback(new Error("Not allowed by CORS"))
-      }
-    },
-    credentials: true,
-  })
-)
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true)
+//       } else {
+//         callback(new Error("Not allowed by CORS"))
+//       }
+//     },
+//     credentials: true,
+//   })
+// )
 
 app.use(express.json())
 
