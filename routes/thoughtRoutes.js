@@ -36,7 +36,6 @@ const Thought = mongoose.model('Thought', thoughtSchema)
 
 // Show all thoughts
 router.get("/thoughts", async (req, res) => {
-  gi
   try {
     const thoughts = await Thought.find().sort({ createdAt: "desc" })
     res.json(thoughts)
@@ -127,8 +126,7 @@ router.get("/thoughts/:id", async (req, res) => {
 
 
 // Post
-router.post("/thoughts", async (req, res) => {
-  await authenticateUser(req, res, next)
+router.post("/thoughts", authenticateUser, async (req, res) => {
   const { message } = req.body
 
   try {
@@ -146,8 +144,10 @@ router.post("/thoughts", async (req, res) => {
       success: true,
       data: newThought,
       message: "Thought created successfully."
-    });
+    })
+
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       data: null,
@@ -158,8 +158,7 @@ router.post("/thoughts", async (req, res) => {
 
 
 // Edit
-router.patch('/thoughts/:id', async (req, res) => {
-  await authenticateUser(req, res, next)
+router.patch('/thoughts/:id', authenticateUser, async (req, res) => {
   const { id } = req.params
 
   try {
@@ -183,7 +182,7 @@ router.patch('/thoughts/:id', async (req, res) => {
 
 
 // Like
-router.post("/thoughts/:id/like", async (req, res, next) => {
+router.post("/thoughts/:id/like", authenticateUser, async (req, res) => {
   const { id } = req.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -216,8 +215,7 @@ router.post("/thoughts/:id/like", async (req, res, next) => {
 
 
 // Delete
-router.delete("/thoughts/:id", async (req, res, next) => {
-  await authenticateUser(req, res, next)
+router.delete("/thoughts/:id", authenticateUser, async (req, res) => {
   const id = req.params.id;
   try {
     const thought = await Thought.findById(id)
