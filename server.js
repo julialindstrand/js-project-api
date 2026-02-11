@@ -1,4 +1,4 @@
-// import cors from "cors"
+import cors from "cors"
 import express from "express"
 import mongoose from "mongoose"
 import "dotenv/config"
@@ -24,6 +24,7 @@ if (process.env.RESET_DB === "true") {
 }
 
 const app = express()
+app.use(cors({ origin: "*" }))
 
 // const allowedOrigins = [
 //   "http://localhost:5173",
