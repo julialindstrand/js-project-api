@@ -11,37 +11,36 @@ const mongoUrl = process.env.MONGO_URL
 mongoose.connect(mongoUrl)
 mongoose.Promise = Promise
 
-if (process.env.RESET_DB === "true") {
-  const seedDatabase = async () => {
-    await Thought.deleteMany()
-    thoughtData.forEach((thought) => {
-      new Thought(thought).save()
-    })
+// if (process.env.RESET_DB === "true") {
+//   const seedDatabase = async () => {
+//     await Thought.deleteMany()
+//     thoughtData.forEach((thought) => {
+//       new Thought(thought).save()
+//     })
 
-    console.log("seeding database")
-    await seedDatabase()
-  }
+//     console.log("seeding database")
+//     await seedDatabase()
+//   }
 
-  const app = express()
+const app = express()
 
-  app.use(cors())
-  app.use(express.json())
+app.use(cors())
+app.use(express.json())
 
-  // Shows all endpoints
-  app.get("/", (req, res) => {
-    const endpoints = listEndpoints(app)
-    res.json({
-      message: "Welcome to the happy thoughts API. Here is a list of all endpoints",
-      endpoints: endpoints,
-    })
+// Shows all endpoints
+app.get("/", (req, res) => {
+  const endpoints = listEndpoints(app)
+  res.json({
+    message: "Welcome to the happy thoughts API. Here is a list of all endpoints",
+    endpoints: endpoints,
   })
+})
 
-  app.use("/thoughts", thoughtRoutes)
-  app.use("/users", userRoutes)
+app.use("/thoughts", thoughtRoutes)
+app.use("/users", userRoutes)
 
-  const port = process.env.PORT || 8080
-  // Start the server
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`)
-  })
-}
+const port = process.env.PORT || 8080
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`)
+})
