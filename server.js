@@ -11,16 +11,17 @@ const mongoUrl = process.env.MONGO_URL
 mongoose.connect(mongoUrl)
 mongoose.Promise = Promise
 
-// if (process.env.RESET_DB === "true") {
-//   const seedDatabase = async () => {
-//     await Thought.deleteMany()
-//     thoughtData.forEach((thought) => {
-//       new Thought(thought).save()
-//     })
+if (process.env.RESET_DB === "true") {
+  const seedDatabase = async () => {
+    await Thought.deleteMany()
+    thoughtData.forEach((thought) => {
+      new Thought(thought).save()
+    })
+  }
 
-//     console.log("seeding database")
-//     await seedDatabase()
-//   }
+  console.log("seeding database")
+  await seedDatabase()
+}
 
 const app = express()
 
