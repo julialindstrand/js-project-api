@@ -4,6 +4,7 @@ import { User } from "./userRoutes.js"
 
 const router = express.Router();
 
+
 // Thought schema
 const thoughtSchema = new mongoose.Schema({
   message: { type: String, required: true },
@@ -17,6 +18,7 @@ const Thought = mongoose.model('Thought', thoughtSchema)
 
 // Show all thoughts
 router.get("/thoughts", async (req, res) => {
+  gi
   try {
     const thoughts = await Thought.find().sort({ createdAt: "desc" })
     res.json(thoughts)
@@ -28,7 +30,7 @@ router.get("/thoughts", async (req, res) => {
 
 
 // Show thoughts with likes
-router.get("/thoughts/likes", async (req, res) => {
+router.get("/thoughts/:id/like", async (req, res) => {
   const { hearts } = req.query
 
   const dbQuery = {}
@@ -63,6 +65,7 @@ router.get("/thoughts/likes", async (req, res) => {
     })
   }
 })
+
 
 // Filter by ID
 router.get("/thoughts/:id", async (req, res) => {
@@ -136,6 +139,7 @@ router.post("/thoughts", async (req, res) => {
     })
   }
 })
+
 
 // Edit
 router.patch('/thoughts/:id', async (req, res) => {
