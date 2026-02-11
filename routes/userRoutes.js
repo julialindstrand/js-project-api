@@ -8,10 +8,13 @@ const router = express.Router()
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  accessToken: { type: String }
+  accessToken: {
+    type: String,
+    default: () => crypto.randomBytes(128).toString("hex"),
+  },
 })
 
-const User = mongoose.model('User', UserSchema)
+export const User = mongoose.model('User', UserSchema)
 
 
 // New User
@@ -87,22 +90,3 @@ router.post('/users/login', async (req, res) => {
 })
 
 export default router
-
-// const authenticateUser = async (req, res, next) => {
-//   try {
-//     const user = await User.findOne({
-//       accessToken: req.header('Authorization').replace("Bearer ", ""),
-//     })
-//     if (user) {
-//       req.user = user
-//       next()
-//     } else {
-//       res.status(401).json({
-//         message: "Authentication missing / invalid",
-//         loggedOut: true
-//       })
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal server error", error: error.message })
-//   }
-// }

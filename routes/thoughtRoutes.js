@@ -1,6 +1,6 @@
 import express from "express"
 import mongoose from "mongoose"
-// import { authenticateUser } from "../middleware/authMiddleware.js"
+import { User } from "./userRoutes"
 
 const router = express.Router();
 
@@ -107,6 +107,7 @@ router.get("/thoughts/:id", async (req, res) => {
 
 // Post
 router.post("/thoughts", async (req, res) => {
+  await authenticateUser(req, res, next)
   const { message } = req.body
 
   try {
@@ -138,6 +139,7 @@ router.post("/thoughts", async (req, res) => {
 
 // Edit
 router.patch('/thoughts/:id', async (req, res) => {
+  await authenticateUser(req, res, next)
   try {
     const thought = await Thought.findById(req.params.id)
 
@@ -160,7 +162,8 @@ router.patch('/thoughts/:id', async (req, res) => {
 
 
 // Delete
-router.delete("/thoughts/:id", async (req, res) => {
+router.delete("/thoughts/:id", async (req, res, next) => {
+  await authenticateUser(req, res, next)
   const id = req.params.id;
   try {
     const thought = await Thought.findById(id)
@@ -191,3 +194,22 @@ router.delete("/thoughts/:id", async (req, res) => {
 })
 
 export default router
+
+const authenticateUser = async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      accessToken: req.header('Authorization').replace("Bearer ", ""),
+    })
+    if (user) {
+      req.user = user
+      next()
+    } else {
+      res.status(401).json({
+        message: "Authentication missing / invalid",
+        loggedOut: true
+      })
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message })
+  }
+}
