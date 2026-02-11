@@ -37,8 +37,8 @@ app.get("/", (req, res) => {
   })
 })
 
-app.use("/thoughts", thoughtRoutes)
-app.use("/users", userRoutes)
+app.use("/", thoughtRoutes)
+app.use("/", userRoutes)
 
 const port = process.env.PORT || 8080
 // Start the server
